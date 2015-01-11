@@ -1,0 +1,32 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item 
+        android:id="@+id/new_option"
+        android:title="@string/new_option"
+        android:showAsAction="never"
+        android:orderInCategory="1"/>
+    
+    <!-- 
+    <item 
+        android:id="@+id/save_option"
+        android:title="@string/save_option"
+        android:showAsAction="never"
+        android:orderInCategory="2"/>
+    
+    <item 
+        android:id="@+id/load_option"
+        android:title="@string/load_option"
+        android:showAsAction="never"
+        android:orderInCategory="3"/>
+    
+    -->
+    
+    <item 
+        android:id="@+id/settings_option"
+        android:title="@string/settings_option"
+        android:showAsAction="never"
+        android:orderInCategory="4"/>
+
+	 
+
+</menu>

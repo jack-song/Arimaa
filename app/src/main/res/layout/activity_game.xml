@@ -1,0 +1,103 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:gravity="center"
+    android:layout_gravity="center"
+    tools:context=".GameActivity" 
+    android:configChanges="keyboardHidden|orientation" >
+    
+    <LinearLayout
+        android:id="@+id/topsection"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:rotation="180" >
+	    
+	    
+       	<Button
+	        android:id="@+id/ubackbutton"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1"
+	        android:text="@string/back_button"
+	        android:onClick="backTurn" />
+    
+	    <Button
+	        android:id="@+id/ustatus"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1"
+	        android:background="@android:color/transparent"
+	        android:enabled="false" />
+	    
+	    <Button 
+	        android:id="@+id/udonebutton"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1"
+	        android:text="@string/done_button"
+	        android:onClick="doneTurn" />
+    
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/midsection"
+       	android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" 
+	    android:layout_below="@id/topsection"
+	    android:layout_centerVertical="true" >
+    
+	    <email.com.gmail.songjiapei.arimaa.BackgroundView
+	        android:id="@+id/board"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_centerVertical="true" />
+	    
+	    <email.com.gmail.songjiapei.arimaa.GameView
+	        android:id="@+id/pieces"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_centerVertical="true" />
+    
+    </RelativeLayout>
+    
+    
+    <LinearLayout
+        android:id="@+id/botsection"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:layout_below="@id/midsection" >
+	    
+       	<Button
+	        android:id="@+id/backbutton"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1"
+	        android:text="@string/back_button"
+	        android:onClick="backTurn" />
+    
+	    <Button
+	        android:id="@+id/status"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1"
+	        android:background="@android:color/transparent"
+	        android:enabled="false" />
+	    
+	    <Button 
+	        android:id="@+id/donebutton"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1"
+	        android:text="@string/done_button"
+	        android:onClick="doneTurn" />
+    
+    </LinearLayout>
+
+</RelativeLayout>

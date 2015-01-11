@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Arimaa Free</string>
+    <string name="new_option">New Game</string>
+    <string name="load_option">Load Game</string>
+    <string name="save_option">Save Game</string>
+    <string name="settings_option">Settings</string>
+    
+    <string name="done_button">Done</string>
+    <string name="back_button">Back</string>
+    
+    <string name="twoview_setting">Two Player View</string>
+    <string name="pieceset_setting">Piece Graphics</string>
+    <string name="backset_setting">Background Graphics</string>
+    
+    <string name="status_gold_turn_prefix">GOLD - </string>
+    <string name="status_silver_turn_prefix">SILVER - </string>
+    <string name="status_gold_setup">GOLD SETUP</string>
+    <string name="status_silver_setup">SILVER SETUP</string>
+    <string name="status_gold_wins">GOLD WINS</string>
+    <string name="status_silver_wins">SILVER WINS</string>
+
+</resources>

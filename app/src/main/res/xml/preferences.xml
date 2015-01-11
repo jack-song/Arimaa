@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+        <CheckBoxPreference
+        android:key="twoview"
+        android:title="@string/twoview_setting"
+        android:defaultValue="true" />
+        
+        <ListPreference
+        android:key="pieceset_selection"
+        android:title="@string/pieceset_setting"
+        android:dialogTitle="@string/pieceset_setting"
+        android:entries="@array/pieceset"
+        android:entryValues="@array/pieceset_values"
+        android:defaultValue="2" />
+        
+        <ListPreference
+        android:key="backset_selection"
+        android:title="@string/backset_setting"
+        android:dialogTitle="@string/backset_setting"
+        android:entries="@array/backset"
+        android:entryValues="@array/backset_values"
+        android:defaultValue="1" />
+        
+</PreferenceScreen>
