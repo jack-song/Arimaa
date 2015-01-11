@@ -5,17 +5,22 @@ Developing the Arimaa Free app for Android
 
 Currently in development as a learning project; feedback, pointers, and advice greatly appreciated
 
+####In progress:
+  - move generation to allow easier move-making
+  - new interaction system that allows dragging and touch based movement of pieces at the same time
+
 ####Planned refactors:
   - Exporting utility methods from the massive GameEngine class to a game rules oriented class
   - Adjusting the scopes of fields and methods
   - reducing amount of switch-cases and other convoluted code pieces
   - Implementing exceptions for handling errors
+  - Add test cases
   - Defining and using constants properly
   - Exporting fields from the massive GameEngine class to a proper model class
     - implementing an observer pattern on the model class to reduce onion code layers
   
 ####Planned features:
-  - move generation to allow easier move-making
+
   
 ####Much later:
   - Bots
