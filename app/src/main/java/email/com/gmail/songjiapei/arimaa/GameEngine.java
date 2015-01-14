@@ -335,6 +335,12 @@ public class GameEngine {
 	}
 
 	void selectSquare(Point p, boolean couldBePushing) {
+
+        //another piece is being held - return it first
+        if(!heldIsEmpty()){
+            returnHeld();
+        }
+
 		board.pickUp(p);
 		selected = p;
 
@@ -342,14 +348,22 @@ public class GameEngine {
 		setMoveable(couldBePushing);
 	}
 
+    Point getHeldPoint() {
+        return selected;
+    }
+
+    boolean[][] getMoveable(){
+        return moveable;
+    }
+
 	// SHOULD ONLY BE CALLED BY A HUMAN
 	boolean requestMove(Point p) {
 
+        if (board.heldIsEmpty()) {
+            return false;
+        }
+
 		Piece heldPiece = board.getHeldPiece();
-		
-		if (board.heldIsEmpty()) {
-			Log.v(TAG, "PlaceMove error: held piece is empty");
-		}
 
 		// check to see if the placement of the piece is legal first
 		if (!moveable[p.x][p.y] || p == selected) {

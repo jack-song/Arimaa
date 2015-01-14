@@ -14,8 +14,8 @@
     <string name="pieceset_setting">Piece Graphics</string>
     <string name="backset_setting">Background Graphics</string>
     
-    <string name="status_gold_turn_prefix">GOLD - </string>
-    <string name="status_silver_turn_prefix">SILVER - </string>
+    <string name="status_gold_turn_prefix">GOLD -\u0020</string>
+    <string name="status_silver_turn_prefix">SILVER -\u0020</string>
     <string name="status_gold_setup">GOLD SETUP</string>
     <string name="status_silver_setup">SILVER SETUP</string>
     <string name="status_gold_wins">GOLD WINS</string>

@@ -5,9 +5,9 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.preference.PreferenceManager;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -27,8 +27,11 @@ final public class GameView extends View {
 	// bitmaps of pieces spritesheet and rectangles for placing the pieces
 	// bitmap should always already be resized to current screen
 	Bitmap pieces;
+    Bitmap highlight = null;
 	Rect src, dst;
 	Point dstp, srcp;
+
+    Paint highlightPaint = new Paint();
 
 	// selection for pieces graphics to be used
 	int pieceset;
@@ -50,6 +53,7 @@ final public class GameView extends View {
 	// members/////////////
 	static final int INVALID_POINTER_ID = -1;
 
+    boolean dragSelected = false;
 	int touchx;
 	int touchy;
 
@@ -82,6 +86,7 @@ final public class GameView extends View {
 		pieceset = 2;
 		dstp = new Point();
 		srcp = new Point();
+        highlightPaint.setAlpha(30);
 	}
 
 	public void loadGame(SharedPreferences pref) {
@@ -105,49 +110,64 @@ final public class GameView extends View {
 		// flipped
 		boolean imgflip = (twoview && !game.isGoldTurn());
 
+        boolean moveable[][] = new boolean[TILES][TILES];
+        moveable = game.getMoveable();
+
 		// draw all the pieces on tiles
-		for (int i = 0; i < TILES; i++)
-			for (int k = 0; k < TILES; k++) {
-				dstp.set(i, k);
+		for (int i = 0; i < TILES; i++) {
+            for (int k = 0; k < TILES; k++) {
 
-				// destination rectangle is currently iterated tile
-				dst = getRectFromPosition(dstp);
+                dstp.set(i, k);
 
-				// sprite positions are origin top left, RETURNS NULL IF NO
-				// MATCH/EMPTY
-				srcp = getSpritePosition(game.getLetter(dstp));
+                // destination rectangle is currently iterated tile
+                dst = getRectFromPosition(dstp);
 
-				if (null == srcp)
-					continue;
+                //if this tile is moveable, highlight it
+                if(moveable[i][k]){
+                    canvas.drawBitmap(highlight, dst.left, dst.top, highlightPaint);
+                }
 
-				src = getRectFromSpritePosition(srcp);
+                // sprite positions are origin top left, RETURNS NULL IF NO
+                // MATCH/EMPTY
+                srcp = getSpritePosition(game.getLetter(dstp));
 
-				if (imgflip) {
-					dst = getFlippedRect(dst);
-					canvas.save(Canvas.MATRIX_SAVE_FLAG); // Saving the canvas
-															// and later
-															// restoring it so
-															// only this image
-															// will be rotated.
-					canvas.rotate(180);
-				}
+                if (null == srcp)
+                    continue;
 
-				if(pieces != null)
-					canvas.drawBitmap(pieces, src, dst, null);
+                src = getRectFromSpritePosition(srcp);
 
-				if (imgflip)
-					canvas.restore();
+                if (imgflip) {
+                    dst = getFlippedRect(dst);
+                    canvas.save(Canvas.MATRIX_SAVE_FLAG); // Saving the canvas
+                    // and later
+                    // restoring it so
+                    // only this image
+                    // will be rotated.
+                    canvas.rotate(180);
+                }
 
-			}
+                if (pieces != null)
+                    canvas.drawBitmap(pieces, src, dst, null);
 
-		// draw the held piece if it exists
+                if (imgflip)
+                    canvas.restore();
+            }
+        }
+
+		// draw a selected piece if it exists
 		if (!game.heldIsEmpty()) {
 
 			srcp = getSpritePosition(game.getHeldLetter());
 
 			src = getRectFromSpritePosition(srcp);
 
-			dst = getMovingRectFromTouchPosition();
+            //dragging means updating with current finger position - tapping means leaving at the "selected" position
+            if(dragSelected) {
+                dst = getMovingRectFromTouchPosition();
+            }
+            else{
+                dst = getRectFromPosition(game.getHeldPoint());
+            }
 
 			if (imgflip) {
 				dst = getFlippedRect(dst);
@@ -183,46 +203,71 @@ final public class GameView extends View {
 		final int action = MotionEventCompat.getActionMasked(event);
 
 		switch (action) {
-		case MotionEvent.ACTION_DOWN: {
-			final int pointerIndex = MotionEventCompat.getActionIndex(event);
-			touchx = (int) MotionEventCompat.getX(event, pointerIndex);
-			touchy = (int) MotionEventCompat.getY(event, pointerIndex);
+            case MotionEvent.ACTION_DOWN: {
+                final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                touchx = (int) MotionEventCompat.getX(event, pointerIndex);
+                touchy = (int) MotionEventCompat.getY(event, pointerIndex);
 
-			game.trySelectSquare(getPointFromTouchPosition(new Point(touchx,
-					touchy)));
+                //something's already being held, request the move
+                if(!game.heldIsEmpty()) {
+                    Point chosen = getPointFromTouchPosition(new Point(touchx, touchy));
 
-			break;
-		}
+                    //move is legal - quit and update
+                    if(game.requestMove(chosen)) {
+                        // TODO: refactor with model?
+                        ((GameActivity) getContext()).updateStatus();
 
-		case MotionEvent.ACTION_MOVE: {
-			// update new coordinates for the held piece
-			final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                        break;
+                    }
+                }
 
-			touchx = (int) MotionEventCompat.getX(event, pointerIndex);
-			touchy = (int) MotionEventCompat.getY(event, pointerIndex);
+                //try to select any square on down - even if another has already been selected
+                if (game.trySelectSquare(getPointFromTouchPosition(new Point(touchx,
+                        touchy)))) {
+                    dragSelected = true;
+                }
 
-			break;
-		}
+                break;
+            }
 
-		case MotionEvent.ACTION_UP: {
-			// request to make move
-			// do nothing if no piece was being held
-			if (game.heldIsEmpty())
-				break;
+            case MotionEvent.ACTION_MOVE: {
+                // update new coordinates for the held piece
+                final int pointerIndex = MotionEventCompat.getActionIndex(event);
 
-			final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                touchx = (int) MotionEventCompat.getX(event, pointerIndex);
+                touchy = (int) MotionEventCompat.getY(event, pointerIndex);
 
-			touchx = (int) MotionEventCompat.getX(event, pointerIndex);
-			touchy = (int) MotionEventCompat.getY(event, pointerIndex);
-			Point released = getPointFromTouchPosition(new Point(touchx, touchy));
+                break;
+            }
 
-			game.requestMove(released);
+            case MotionEvent.ACTION_UP: {
+                // request to make move
+                // do nothing if no piece was being held
+                if (game.heldIsEmpty())
+                    break;
 
-			// TODO: refactor with model?
-			((GameActivity) getContext()).updateStatus();
+                final int pointerIndex = MotionEventCompat.getActionIndex(event);
 
-			break;
-		}
+                touchx = (int) MotionEventCompat.getX(event, pointerIndex);
+                touchy = (int) MotionEventCompat.getY(event, pointerIndex);
+                Point released = getPointFromTouchPosition(new Point(touchx, touchy));
+
+                //if release on the same square as pickup - allow tapping based movement
+                if(game.getHeldPoint().equals(released)) {
+                    dragSelected = false;
+                }
+                //if release on not the same square as pickup, assume that a move was requested
+                else {
+                    game.requestMove(released);
+                    // TODO: refactor with model?
+                    ((GameActivity) getContext()).updateStatus();
+
+                    dragSelected = false;
+                }
+
+                break;
+            }
+
 		}
 
 		invalidate();
@@ -367,6 +412,14 @@ final public class GameView extends View {
 				tilesize * IMGROWS, true);
 
 		pre_pieces.recycle();
+
+        if(highlight == null) {
+            Bitmap pre_highlight = BitmapFactory.decodeResource(getResources(), R.drawable.moveable);
+
+            highlight = Bitmap.createScaledBitmap(pre_highlight, tilesize, tilesize, true);
+
+            pre_highlight.recycle();
+        }
 	}
 
 }
