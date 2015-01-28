@@ -86,7 +86,7 @@ final public class GameView extends View {
 		pieceset = 2;
 		dstp = new Point();
 		srcp = new Point();
-        highlightPaint.setAlpha(30);
+        highlightPaint.setAlpha(40);
 	}
 
 	public void loadGame(SharedPreferences pref) {
@@ -118,6 +118,10 @@ final public class GameView extends View {
             for (int k = 0; k < TILES; k++) {
 
                 dstp.set(i, k);
+
+                //don't draw a piece that's being "dragged"
+                if(dragSelected && dstp.equals(game.getHeldPoint()))
+                    continue;
 
                 // destination rectangle is currently iterated tile
                 dst = getRectFromPosition(dstp);

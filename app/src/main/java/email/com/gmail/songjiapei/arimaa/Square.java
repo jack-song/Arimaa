@@ -51,7 +51,8 @@ public class Square {
 	//accept new piece
 	//ALWAYS CHECK ISEMPTY FIRST
 	void acceptPiece(Piece piece){
-		
+		if(null == piece)
+            throw(new IllegalStateException("Piece cannot be null"));
 		this.piece = piece;
 		empty = false;
 	}

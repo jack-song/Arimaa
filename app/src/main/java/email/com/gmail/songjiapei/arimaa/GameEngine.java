@@ -24,7 +24,8 @@ public class GameEngine {
 	//records state of the board at the beginning of a turn
 	private String boardState = "";
 
-	private Point selected;
+	private Point heldPosition;
+    private Square held;
 
 	// ///////////////////////////////////////////////////////////GAME
 	// PROGRESSION MEMBERS
@@ -39,10 +40,13 @@ public class GameEngine {
 
 	public GameEngine() {
 		board = new Board();
+        held = new Square();
 		actionList = new ActionList();
 	}
 
 	void resetGame() {
+        if(!held.isEmpty())
+            putDown(heldPosition);
 		gameState = GameState.GOLDPLACE;
 		board.reset();
 		actionList.clear();
@@ -73,10 +77,7 @@ public class GameEngine {
 	}
 
 	boolean isPlayingState() {
-		if (gameState == GameState.GOLDTURN || gameState == GameState.SILVERTURN)
-			return true;
-
-		return false;
+		return (gameState == GameState.GOLDTURN || gameState == GameState.SILVERTURN);
 	}
 
 	int getTurnSteps() {
@@ -118,7 +119,9 @@ public class GameEngine {
 		default:
 			return false;
 		}
-		
+
+        if(!held.isEmpty())
+            putDown(heldPosition);
 		//update positions of the board
 		boardState = board.getState();
 
@@ -147,10 +150,8 @@ public class GameEngine {
 				break;
 
 			default:
-				return;
+                break;
 			}
-
-		
 	}
 	
 	private void checkGoldRabbitWin(){
@@ -168,7 +169,7 @@ public class GameEngine {
 	}
 	
 	private void checkRabbitReachWin(Point p, PieceColour rabbitColour, GameState winState){
-		if(!board.isEmpty(p))
+		if(!isEmpty(p))
 			if(board.getPiece(p).getType() == PieceType.RABBIT && board.getPiece(p).getColour() == rabbitColour)
 				gameState = winState;
 	}
@@ -182,7 +183,7 @@ public class GameEngine {
 		for(int x = 0; x < 8; x++)
 			for(int y = 0; y < 8; y++){
 				Point p = new Point(x, y);
-				if(!board.isEmpty(p))
+				if(!isEmpty(p))
 					if(board.getPiece(p).getType() == PieceType.RABBIT && board.getPiece(p).getColour() == side)
 						return true;
 			}
@@ -195,7 +196,7 @@ public class GameEngine {
 				new Point(5, 5) };
 
 		for (Point trap : traps) {
-			if (!board.isEmpty(trap)) {
+			if (!isEmpty(trap)) {
 				if (!isSafe(trap)) {
 					actionList.addGameAction(new RemoveAction(trap, board
 							.getPiece(trap)));
@@ -213,18 +214,13 @@ public class GameEngine {
 			turnSteps++;
 	}
 
-	void backStep() {
-		if (turnSteps > 0)
-			turnSteps--;
-	}
-
 	// finalize selection of pieces for gold, move rabbits if necessary
 	// IT MUST BE GOLDPLACE gameState
 	boolean checkGoldPlacement() {
 		for (int x = 0; x < 8; x++) {
 			for (int y = 2; y < 4; y++) {
 				// squares must be empty
-				if (!board.isEmpty(new Point(x, y))) {
+				if (!isEmpty(new Point(x, y))) {
 					return false;
 				}
 			}
@@ -235,7 +231,7 @@ public class GameEngine {
 			for (int yf = 0; yf < 2; yf++) {
 				Point p = new Point(xf, yf);
 				
-				if (board.isEmpty(p))
+				if (isEmpty(p))
 					board.placeNewPiece(p, new Piece(PieceType.RABBIT, PieceColour.GOLD));
 			}
 		}
@@ -248,7 +244,7 @@ public class GameEngine {
 		for (int x = 0; x < 8; x++) {
 			for (int y = 4; y < 6; y++) {
 				// squares must be empty
-				if (!board.isEmpty(new Point(x, y))) {
+				if (!isEmpty(new Point(x, y))) {
 					if (board.getLevel(new Point(x, y)) != 1)
 						return false;
 				}
@@ -260,7 +256,7 @@ public class GameEngine {
 			for (int yf = 6; yf < 8; yf++) {
 				Point p = new Point(xf, yf);
 				
-				if (board.isEmpty(p))
+				if (isEmpty(p))
 					board.placeNewPiece(p, new Piece(PieceType.RABBIT, PieceColour.SILVER));
 			}
 		}
@@ -275,24 +271,39 @@ public class GameEngine {
 
 	// USED FOR PASSING ON INFO TO GAMEVIEW FOR DRAWING - NOT USED WITHIN ENGINE
 	char getHeldLetter() {
-		return board.getHeldLetter();
+		return held.getPiece().getLetter();
 	}
 
 	// USED FOR PASSING ON INFO TO GAMEVIEW FOR DRAWING - NOT USED WITHIN ENGINE
 	boolean isHeldSilver() {
-		return Piece.PieceColour.SILVER == board.getHeldColour();
+		return Piece.PieceColour.SILVER == held.getColour();
 	}
 
 	// USED FOR PASSING ON INFO TO GAMEVIEW FOR DRAWING - NOT USED WITHIN ENGINE
 	boolean heldIsEmpty() {
-		return board.heldIsEmpty();
+		return held.isEmpty();
 	}
+
+    void pickUp(Point p){
+        held.acceptPiece(board.getPiece(p));
+    }
+
+    void putDown(Point p){
+        board.remove(heldPosition);
+        board.placeNewPiece(p, held.getPiece());
+        held.releasePiece();
+        clearMoveable();
+    }
+
+    boolean isEmpty(Point p){
+            return board.isEmpty(p);
+    }
 
 	// method to shift a piece to "held" on the board, returns true if
 	// successful, false if not
 	// checks to see if it's reasonable to select the particular piece
 	boolean trySelectSquare(Point p) {
-		if (board.isEmpty(p) || gameState == GameState.GAMEOVERGOLD || gameState == GameState.GAMEOVERSILVER)
+		if (isEmpty(p) || gameState == GameState.GAMEOVERGOLD || gameState == GameState.GAMEOVERSILVER)
 			return false;
 
 		if (isPlayingState() && turnSteps >= 4)
@@ -341,15 +352,15 @@ public class GameEngine {
             returnHeld();
         }
 
-		board.pickUp(p);
-		selected = p;
+		pickUp(p);
+		heldPosition = p;
 
 		// decide on the moves available to the piece
 		setMoveable(couldBePushing);
 	}
 
     Point getHeldPoint() {
-        return selected;
+        return heldPosition;
     }
 
     boolean[][] getMoveable(){
@@ -359,14 +370,15 @@ public class GameEngine {
 	// SHOULD ONLY BE CALLED BY A HUMAN
 	boolean requestMove(Point p) {
 
-        if (board.heldIsEmpty()) {
+        Log.v(TAG, "Move Request!");
+        if (heldIsEmpty()) {
             return false;
         }
 
-		Piece heldPiece = board.getHeldPiece();
+		Piece heldPiece = held.getPiece();
 
 		// check to see if the placement of the piece is legal first
-		if (!moveable[p.x][p.y] || p == selected) {
+		if (!moveable[p.x][p.y] || p == heldPosition) {
 			returnHeld();
 			clearMoveable();
 			return false;
@@ -376,48 +388,47 @@ public class GameEngine {
 		// places
 		if (!isPlayingState()) {
 			
-			if(!board.isEmpty(p))
-				board.makeMove(p, selected);
+			if(!isEmpty(p))
+				board.makeMove(p, heldPosition);
 			
-			actionList.addMove(new PlaceMove(selected, p, heldPiece));
+			actionList.addMove(new PlaceMove(heldPosition, p, heldPiece));
 		}
+        Log.v(TAG, "Approved!");
 
 		// ADD MOVE
 		if (isPlayingState()) {
+
 			if (isRightTurnForSelection(heldPiece.getColour())) {
 				
 				//make sure rabbits don't go backwards
 				if(heldPiece.getType() == Piece.PieceType.RABBIT){
-					if(heldPiece.getColour() == PieceColour.GOLD && ShiftMove.getDirection(selected, p) == Direction.SOUTH){
+					if(heldPiece.getColour() == PieceColour.GOLD && ShiftMove.getDirection(heldPosition, p) == Direction.SOUTH){
 						returnHeld();
 						clearMoveable();
 						return false;
 					}
-					if(heldPiece.getColour()== PieceColour.SILVER && ShiftMove.getDirection(selected, p) == Direction.NORTH){
+					if(heldPiece.getColour()== PieceColour.SILVER && ShiftMove.getDirection(heldPosition, p) == Direction.NORTH){
 						returnHeld();
 						clearMoveable();
 						return false;
 					}
 				}
 				
-				actionList.addMove(new ShiftMove(selected, p, board
-						.getHeldPiece(), false));
+				actionList.addMove(new ShiftMove(heldPosition, p, held.getPiece(), false));
 			}
 
 			// REMEMBER IF IT WAS A PUSH - PRIORITIZE PULL (LESS EXPENSIVE MOVE)
-			else if (couldGetPulledByLastMove(selected, board.getHeldPiece())) {
-				actionList.addMove(new ShiftMove(selected, p, board
-						.getHeldPiece(), false));
+			else if (couldGetPulledByLastMove(heldPosition, held.getPiece())) {
+				actionList.addMove(new ShiftMove(heldPosition, p, held.getPiece(), false));
 			}
 
 			else {
-				actionList.addMove(new ShiftMove(selected, p, board
-						.getHeldPiece(), true));
+				actionList.addMove(new ShiftMove(heldPosition, p, held.getPiece(), true));
 			}
 			
 		}
 
-		board.putDown(p);
+		putDown(p);
 
 		clearMoveable();
 		advanceStep();
@@ -429,8 +440,9 @@ public class GameEngine {
 	// SOURCE SHOULD HAVE A PIECE, DESTINATION SHOULD ALWAYS BE EMPTY
 	boolean requestMove(CpuPlaceMove m) {
 
-		if (!board.isEmpty(m.getEnd()) || board.isEmpty(m.getStart())) {
-			return false;
+		if (!isEmpty(m.getEnd()) || isEmpty(m.getStart())) {
+            Log.v(TAG, "CPU request rejected!");
+            return false;
 		}
 
 		board.makeMove(m.getStart(), m.getEnd());
@@ -441,23 +453,23 @@ public class GameEngine {
 		if (turnSteps <= 0 || !actionList.isLastMoveShift())
 			return false;
 
+        returnHeld();
+        clearMoveable();
+
 		CpuPlaceMove revertedMove = actionList.getRevertedMove();
+        Log.v(TAG, "Reverted: " + revertedMove.getPiece().getLetter());
 
-		if (null != revertedMove) {
-			RemoveAction removeAction = actionList.revertMoveAndGetRemoveAction();
+        RemoveAction removeAction = actionList.revertMoveAndGetRemoveAction();
 
-			// a piece was removed
-			if (null != removeAction) {
-				board.placeNewPiece(removeAction.getPosition(),
-						removeAction.getPiece());
-			}
+        // a piece was removed
+        if (null != removeAction) {
+            board.placeNewPiece(removeAction.getPosition(),
+                    removeAction.getPiece());
+        }
 
-			requestMove(revertedMove);
-			turnSteps--;
-			return true;
-		}
-
-		return false;
+        requestMove(revertedMove);
+        turnSteps--;
+        return true;
 	}
 	
 	public String getHistory(){
@@ -499,13 +511,13 @@ public class GameEngine {
 	private void returnHeld() {
 		// if there's a piece being held, put it down back where it was picked
 		// up from
-		if (!board.heldIsEmpty())
-			board.putDown(selected);
+		if (!held.isEmpty())
+			putDown(heldPosition);
 
 	}
 
 	boolean isSilver(Point p) {
-		if (board.isEmpty(p)) {
+		if (isEmpty(p)) {
 			return false;
 		}
 
@@ -566,10 +578,8 @@ public class GameEngine {
 	private boolean areAdjacent(Point p1, Point p2) {
 		if (p1.y == p2.y && (p1.x == p2.x + 1 || p1.x == p2.x - 1))
 			return true;
-		else if (p1.x == p2.x && (p1.y == p2.y + 1 || p1.y == p2.y - 1))
-			return true;
 		else
-			return false;
+            return (p1.x == p2.x && (p1.y == p2.y + 1 || p1.y == p2.y - 1));
 	}
 
 	private Set<Point> getFilledAdjacents(Point p) {
@@ -577,19 +587,19 @@ public class GameEngine {
 		Set<Point> filledAdjacents = new HashSet<Point>();
 
 		Point testRight = new Point(p.x + 1, p.y);
-		if (p.x < 7 && !board.isEmpty(testRight))
+		if (p.x < 7 && !isEmpty(testRight))
 			filledAdjacents.add(testRight);
 
 		Point testLeft = new Point(p.x - 1, p.y);
-		if (p.x > 0 && !board.isEmpty(testLeft))
+		if (p.x > 0 && !isEmpty(testLeft))
 			filledAdjacents.add(testLeft);
 
 		Point testUp = new Point(p.x, p.y + 1);
-		if (p.y < 7 && !board.isEmpty(testUp))
+		if (p.y < 7 && !isEmpty(testUp))
 			filledAdjacents.add(testUp);
 
 		Point testDown = new Point(p.x, p.y - 1);
-		if (p.y > 0 && !board.isEmpty(testDown))
+		if (p.y > 0 && !isEmpty(testDown))
 			filledAdjacents.add(testDown);
 
 		return filledAdjacents;
@@ -600,19 +610,19 @@ public class GameEngine {
 		Set<Point> emptyAdjacents = new HashSet<Point>();
 
 		Point testRight = new Point(p.x + 1, p.y);
-		if (p.x < 7 && board.isEmpty(testRight))
+		if (p.x < 7 && isEmpty(testRight))
 			emptyAdjacents.add(testRight);
 
 		Point testLeft = new Point(p.x - 1, p.y);
-		if (p.x > 0 && board.isEmpty(testLeft))
+		if (p.x > 0 && isEmpty(testLeft))
 			emptyAdjacents.add(testLeft);
 
 		Point testUp = new Point(p.x, p.y + 1);
-		if (p.y < 7 && board.isEmpty(testUp))
+		if (p.y < 7 && isEmpty(testUp))
 			emptyAdjacents.add(testUp);
 
 		Point testDown = new Point(p.x, p.y - 1);
-		if (p.y > 0 && board.isEmpty(testDown))
+		if (p.y > 0 && isEmpty(testDown))
 			emptyAdjacents.add(testDown);
 
 		return emptyAdjacents;
@@ -634,37 +644,25 @@ public class GameEngine {
 	// checks if a bigger enemy piece is there ALWAYS p1 acting on p2 ASSUMES
 	// EXISTANCE
 	private boolean threatening(Point p1, Point p2) {
-		if (!isSameColour(p1, p2) && isBigger(p1, p2))
-			return true;
-
-		return false;
+        return (!isSameColour(p1, p2) && isBigger(p1, p2));
 	}
 
 	// checks if a friendly piece is keeping another piece mobile ASSUMES
 	// EXISTANCE
 	private boolean saving(Point p1, Point p2) {
-		if (isSameColour(p1, p2))
-			return true;
-
-		return false;
+        return (isSameColour(p1, p2));
 	}
 
 	// checks if a bigger enemy piece is keeping a piece from moving
 	private boolean freezing(Point p1, Point p2) {
-		if (threatening(p1, p2) && !isSafe(p2))
-			return true;
-
-		return false;
+        return (threatening(p1, p2) && !isSafe(p2));
 	}
 
 	// controlled VS frozen : adjacent friend cannot save you (don't matter),
 	// but the attacker cannot be frozen
 	private boolean controlling(Point p1, Point p2) {
 
-		if (threatening(p1, p2) && !isFrozen(p1))
-			return true;
-
-		return false;
+        return (threatening(p1, p2) && !isFrozen(p1));
 	}
 
 	// checks if a square is "safe" with allies or not
@@ -734,7 +732,7 @@ public class GameEngine {
 		// SHOULD ONLY BE BACK UP (should not have been selected in the first
 		// place)
 		// check if something is actually selected and there are enough turns
-		if (board.heldIsEmpty() || (isPlayingState() && turnSteps >= 4)) {
+		if (held.isEmpty() || (isPlayingState() && turnSteps >= 4)) {
 			return;
 		}
 
@@ -753,7 +751,7 @@ public class GameEngine {
 			}
 
 			// if wrong team and cannot push, only pull is available
-			if (!isRightTurnForSelection(board.getHeldColour())
+			if (!isRightTurnForSelection(held.getColour())
 					&& !couldBePushing) {
 				moveable[actionList.getLastMoveSource().x][actionList
 						.getLastMoveSource().y] = true;
@@ -762,11 +760,18 @@ public class GameEngine {
 		}
 
 		// if regular move/pushing
-		Set<Point> emptyAdjacents = getEmptyAdjacents(selected);
+		Set<Point> emptyAdjacents = getEmptyAdjacents(heldPosition);
 
 		for (Point p : emptyAdjacents) {
 			moveable[p.x][p.y] = true;
 		}
+
+        //extra for rabbits on their turn
+        if(getHeldLetter() == 'R' && gameState == GameState.GOLDTURN)
+            moveable[heldPosition.x][heldPosition.y-1] = false;
+
+        if(getHeldLetter() == 'r' && gameState == GameState.SILVERTURN)
+            moveable[heldPosition.x][heldPosition.y+1] = false;
 
 	}
 

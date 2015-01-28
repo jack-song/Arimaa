@@ -10,13 +10,8 @@ public class Board {
 	//squares on board
 	Square[][] squares = new Square[8][8];
 
-	//imaginary square for the piece being held by user
-	Square held;
-	
 	public Board() {
-		
-		held = new Square();
-		
+
 		for(int i = 0; i < 8; i++)
 			for(int k = 0; k < 8; k++)
 			{
@@ -109,28 +104,14 @@ public class Board {
 		return squares[p.x][p.y].isEmpty();
 	}
 	
-	boolean heldIsEmpty(){
-		return held.isEmpty();
-	}
-	
 	Piece getPiece(Point p){
 		return squares[p.x][p.y].getPiece();
-	}
-	
-	Piece getHeldPiece(){
-		return held.getPiece();
 	}
 	
 	//ALWAYS CHECK EMPTY
 	Piece.PieceColour getColour(Point p){
 		
 		return squares[p.x][p.y].getColour();
-	}
-	
-	//ALWAYS CHECK EMPTY
-	Piece.PieceColour getHeldColour(){
-		
-		return held.getColour();
 	}
 	
 	//retrieve the heirarchy level of the piece as an int
@@ -147,24 +128,10 @@ public class Board {
 		return squares[p.x][p.y].readSquare();
 	}
 	
-	char getHeldLetter(){
-		return held.readSquare();
-	}
-	
 	//moves piece from p1 to p2 ONE DIRECTION ONLY
 	//ALWAYS CHECK EMPTIES
 	void makeMove(Point p1, Point p2){
 		squares[p2.x][p2.y].acceptPiece(squares[p1.x][p1.y].releasePiece());
-	}
-	
-	//picking up and putting down a piece from the hand
-	//ALWAYS CHECK EMPTIES
-	void pickUp(Point p){
-		held.acceptPiece(squares[p.x][p.y].releasePiece());
-	}
-	
-	void putDown(Point p){
-		squares[p.x][p.y].acceptPiece(held.releasePiece());
 	}
 	
 	//removes a piece from p
@@ -182,9 +149,7 @@ public class Board {
 	
 	//assumes that the game engine will place the rabbits after user is done moving the big pieces
 	void reset(){
-		
-		held.releasePiece();
-		
+
 		for(int i = 0; i < 8; i++)
 			for(int j = 0; j < 8; j++)
 			{
