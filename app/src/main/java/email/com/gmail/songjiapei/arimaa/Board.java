@@ -136,9 +136,9 @@ public class Board {
 	
 	//removes a piece from p
 	//ALWAYS CHECK EMPTIES
-	void remove(Point p){
+	Piece remove(Point p){
 		
-		squares[p.x][p.y].releasePiece();
+		return squares[p.x][p.y].releasePiece();
 	}
 	
 	//adds a piece to p

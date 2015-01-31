@@ -87,7 +87,8 @@ public class GameEngine {
 	boolean advanceGameState(boolean record) {
 
 		//does not have to use all moves, but boardState must be different
-		if (turnSteps < 1 || board.getState().equals(boardState))
+        //also cannot be in the middle of a push
+		if (turnSteps < 1 || board.getState().equals(boardState) || actionList.wasPushing())
 			return false;
 		
 		switch (gameState) {
@@ -285,11 +286,10 @@ public class GameEngine {
 	}
 
     void pickUp(Point p){
-        held.acceptPiece(board.getPiece(p));
+        held.acceptPiece(board.remove(p));
     }
 
     void putDown(Point p){
-        board.remove(heldPosition);
         board.placeNewPiece(p, held.getPiece());
         held.releasePiece();
         clearMoveable();
@@ -385,7 +385,7 @@ public class GameEngine {
 		}
 
 		// if the destination has a piece(SHOULD BE SAME TYPE), have it swap
-		// places
+		// places (extra move put in)
 		if (!isPlayingState()) {
 			
 			if(!isEmpty(p))
@@ -393,7 +393,6 @@ public class GameEngine {
 			
 			actionList.addMove(new PlaceMove(heldPosition, p, heldPiece));
 		}
-        Log.v(TAG, "Approved!");
 
 		// ADD MOVE
 		if (isPlayingState()) {
@@ -767,10 +766,10 @@ public class GameEngine {
 		}
 
         //extra for rabbits on their turn
-        if(getHeldLetter() == 'R' && gameState == GameState.GOLDTURN)
+        if(getHeldLetter() == 'R' && gameState == GameState.GOLDTURN && heldPosition.y > 0)
             moveable[heldPosition.x][heldPosition.y-1] = false;
 
-        if(getHeldLetter() == 'r' && gameState == GameState.SILVERTURN)
+        if(getHeldLetter() == 'r' && gameState == GameState.SILVERTURN && heldPosition.y < 7)
             moveable[heldPosition.x][heldPosition.y+1] = false;
 
 	}
