@@ -1,6 +1,7 @@
 package email.com.gmail.songjiapei.arimaa;
 
 import android.graphics.Point;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 
@@ -40,7 +41,18 @@ public class MultiMove extends MoveAction {
     }
 
     public String toString(){
-        return String.valueOf(HISTORY_FLAG) + piece.getLetter() + Board.positionToString(start) + Board.positionToString(end);
+        if(shifts.isEmpty()){
+            return "";
+        }
+        else{
+            String[] shiftStrings = new String[shifts.size()];
+
+            for(int i = 0; i < shifts.size(); i++){
+                shiftStrings[i] = shifts.get(i).toString();
+            }
+
+            return TextUtils.join(" ", shiftStrings);
+        }
     }
 
     public int getSteps(){
