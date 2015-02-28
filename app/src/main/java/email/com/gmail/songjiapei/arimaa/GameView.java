@@ -27,7 +27,8 @@ final public class GameView extends View {
 	// bitmaps of pieces spritesheet and rectangles for placing the pieces
 	// bitmap should always already be resized to current screen
 	Bitmap pieces;
-    Bitmap highlight = null;
+    Bitmap moveable_highlight = null;
+    Bitmap held_highlight = null;
 	Rect src, dst;
 	Point dstp, srcp;
 
@@ -39,6 +40,7 @@ final public class GameView extends View {
 	// number of rows and columns in spritesheet
 	static final int IMGROWS = 2;
 	static final int IMGCOLS = 6;
+    static final int HIGHLIGHTALPHA = 30;
 
 	// number of tiles per side
 	static final int TILES = 8;
@@ -86,7 +88,7 @@ final public class GameView extends View {
 		pieceset = 2;
 		dstp = new Point();
 		srcp = new Point();
-        highlightPaint.setAlpha(40);
+        highlightPaint.setAlpha(HIGHLIGHTALPHA);
 	}
 
 	public void loadGame(SharedPreferences pref) {
@@ -118,17 +120,24 @@ final public class GameView extends View {
             for (int k = 0; k < TILES; k++) {
 
                 dstp.set(i, k);
-
-                //don't draw a piece that's being "dragged"
-                if(dragSelected && dstp.equals(game.getHeldPoint()))
-                    continue;
-
                 // destination rectangle is currently iterated tile
                 dst = getRectFromPosition(dstp);
 
-                //if this tile is moveable, highlight it
-                if(moveable[i][k]){
-                    canvas.drawBitmap(highlight, dst.left, dst.top, highlightPaint);
+                if(!game.heldIsEmpty()) {
+                    Point heldPoint = game.getHeldPoint();
+
+                    if ((heldPoint.x == i) && (heldPoint.y == k)) {
+                        canvas.drawBitmap(held_highlight, dst.left, dst.top, highlightPaint);
+                    }
+
+                    //if this tile is moveable, highlight it
+                    if (moveable[i][k]) {
+                        canvas.drawBitmap(moveable_highlight, dst.left, dst.top, highlightPaint);
+                    }
+
+                    //don't draw a piece that's being "dragged"
+                    if (dragSelected && dstp.equals(heldPoint))
+                        continue;
                 }
 
                 // sprite positions are origin top left, RETURNS NULL IF NO
@@ -417,12 +426,15 @@ final public class GameView extends View {
 
 		pre_pieces.recycle();
 
-        if(highlight == null) {
-            Bitmap pre_highlight = BitmapFactory.decodeResource(getResources(), R.drawable.moveable);
+        if(moveable_highlight == null) {
+            Bitmap pre_moveable_highlight = BitmapFactory.decodeResource(getResources(), R.drawable.moveable);
+            Bitmap pre_held_highlight = BitmapFactory.decodeResource(getResources(), R.drawable.held);
 
-            highlight = Bitmap.createScaledBitmap(pre_highlight, tilesize, tilesize, true);
+            moveable_highlight = Bitmap.createScaledBitmap(pre_moveable_highlight, tilesize, tilesize, true);
+            held_highlight = Bitmap.createScaledBitmap(pre_held_highlight, tilesize, tilesize, true);
 
-            pre_highlight.recycle();
+            pre_moveable_highlight.recycle();
+            pre_held_highlight.recycle();
         }
 	}
 

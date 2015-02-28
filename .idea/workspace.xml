@@ -47,20 +47,42 @@
       <file leaf-file-name="GameEngine.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/GameEngine.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.571428" vertical-offset="6305" max-vertical-offset="14586">
-              <caret line="407" column="88" selection-start-line="407" selection-start-column="88" selection-end-line="407" selection-end-column="88" />
+            <state vertical-scroll-proportion="-6.857143" vertical-offset="4449" max-vertical-offset="14620">
+              <caret line="287" column="19" selection-start-line="287" selection-start-column="19" selection-end-line="287" selection-end-column="19" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#6991#6992#0" expanded="true" />
+                <element signature="e#7040#7041#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ActionList.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="Square.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/Square.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="499" max-vertical-offset="1054">
+              <caret line="52" column="9" selection-start-line="52" selection-start-column="9" selection-end-line="52" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ActionList.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/ActionList.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.26846847" vertical-offset="2299" max-vertical-offset="3026">
-              <caret line="148" column="41" selection-start-line="148" selection-start-column="41" selection-end-line="148" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2248" max-vertical-offset="3026">
+              <caret line="154" column="36" selection-start-line="154" selection-start-column="36" selection-end-line="154" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GameView.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/GameView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.35140562" vertical-offset="964" max-vertical-offset="7242">
+              <caret line="78" column="76" selection-start-line="78" selection-start-column="76" selection-end-line="78" selection-end-column="76" />
               <folding />
             </state>
           </provider>
@@ -765,11 +787,11 @@
       <list>
         <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/Square.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/GameView.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/Board.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/GameEngine.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/MultiMove.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/ActionList.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/GameView.java" />
       </list>
     </option>
   </component>
@@ -1143,6 +1165,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="170" max-vertical-offset="510">
           <caret line="10" column="44" selection-start-line="10" selection-start-column="44" selection-end-line="10" selection-end-column="44" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1175,6 +1198,8 @@
           <caret line="375" column="17" selection-start-line="375" selection-start-column="17" selection-end-line="375" selection-end-column="17" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#6991#6992#0" expanded="true" />
+            <element signature="e#7040#7041#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1183,6 +1208,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="74" max-vertical-offset="510">
           <caret line="10" column="44" selection-start-line="10" selection-start-column="44" selection-end-line="10" selection-end-column="44" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1223,6 +1249,8 @@
           <caret line="756" column="41" selection-start-line="756" selection-start-column="41" selection-end-line="771" selection-end-column="54" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#6991#6992#0" expanded="true" />
+            <element signature="e#7040#7041#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1231,6 +1259,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="74" max-vertical-offset="510">
           <caret line="10" column="44" selection-start-line="10" selection-start-column="44" selection-end-line="10" selection-end-column="44" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1271,6 +1300,8 @@
           <caret line="771" column="54" selection-start-line="771" selection-start-column="54" selection-end-line="771" selection-end-column="54" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#6991#6992#0" expanded="true" />
+            <element signature="e#7040#7041#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1279,6 +1310,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="74" max-vertical-offset="510">
           <caret line="10" column="44" selection-start-line="10" selection-start-column="44" selection-end-line="10" selection-end-column="44" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1319,6 +1351,8 @@
           <caret line="293" column="27" selection-start-line="293" selection-start-column="12" selection-end-line="293" selection-end-column="27" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#6991#6992#0" expanded="true" />
+            <element signature="e#7040#7041#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1327,6 +1361,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="74" max-vertical-offset="510">
           <caret line="10" column="44" selection-start-line="10" selection-start-column="44" selection-end-line="10" selection-end-column="44" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1367,6 +1402,8 @@
           <caret line="349" column="24" selection-start-line="349" selection-start-column="24" selection-end-line="349" selection-end-column="24" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#6991#6992#0" expanded="true" />
+            <element signature="e#7040#7041#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1422,20 +1459,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="170" max-vertical-offset="510">
           <caret line="10" column="44" selection-start-line="10" selection-start-column="44" selection-end-line="10" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/Square.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="1088">
-          <caret line="53" column="25" selection-start-line="53" selection-start-column="25" selection-end-line="53" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/GameView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31794873" vertical-offset="1310" max-vertical-offset="7038">
-          <caret line="99" column="54" selection-start-line="99" selection-start-column="54" selection-end-line="99" selection-end-column="54" />
           <folding />
         </state>
       </provider>
@@ -1501,16 +1524,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/GameEngine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.571428" vertical-offset="6305" max-vertical-offset="14586">
-          <caret line="407" column="88" selection-start-line="407" selection-start-column="88" selection-end-line="407" selection-end-column="88" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/ShiftMove.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="204" max-vertical-offset="1666">
@@ -1529,8 +1542,36 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/ActionList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.26846847" vertical-offset="2299" max-vertical-offset="3026">
-          <caret line="148" column="41" selection-start-line="148" selection-start-column="41" selection-end-line="148" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2248" max-vertical-offset="3026">
+          <caret line="154" column="36" selection-start-line="154" selection-start-column="36" selection-end-line="154" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/GameEngine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.857143" vertical-offset="4449" max-vertical-offset="14620">
+          <caret line="287" column="19" selection-start-line="287" selection-start-column="19" selection-end-line="287" selection-end-column="19" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#6991#6992#0" expanded="true" />
+            <element signature="e#7040#7041#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/Square.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="499" max-vertical-offset="1054">
+          <caret line="52" column="9" selection-start-line="52" selection-start-column="9" selection-end-line="52" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/email/com/gmail/songjiapei/arimaa/GameView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35140562" vertical-offset="964" max-vertical-offset="7242">
+          <caret line="78" column="76" selection-start-line="78" selection-start-column="76" selection-end-line="78" selection-end-column="76" />
           <folding />
         </state>
       </provider>
