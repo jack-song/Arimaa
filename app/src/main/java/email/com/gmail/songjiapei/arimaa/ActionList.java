@@ -62,13 +62,21 @@ public class ActionList {
 		return null;
 	}
 	
-	public boolean isLastMoveShift(){
+	public boolean isLastMoveShiftOrMulti(){
 		if(!isMovesEmpty()){
-			return getLastMove() instanceof ShiftMove;
+			return getLastMove() instanceof ShiftMove || getLastMove() instanceof MultiMove;
 		}
 		
 		return false;
 	}
+
+    public int getLastMoveSteps(){
+        if(getLastMove() instanceof MultiMove){
+            return ((MultiMove) getLastMove()).getSteps();
+        }
+
+        return 1;
+    }
 		
 	//MUST GETREVERTMOVE FIRST
 	public RemoveAction revertMoveAndGetRemoveAction(){
@@ -93,13 +101,13 @@ public class ActionList {
 		
 		return null;
 	}
-	
-	//CAN ONLY TAKBACK A SHIFTMOVE
+
 	CpuPlaceMove getRevertedMove(){
 		if(isMovesEmpty())
 			return null;
-		
-		ShiftMove lastMove = (ShiftMove) getLastMove();
+
+        //should only be a ShiftMove or a MultiMove
+		MoveAction lastMove = getLastMove();
 		
 		Point newStart = lastMove.getEnd();
 		Point newEnd = lastMove.getStart();

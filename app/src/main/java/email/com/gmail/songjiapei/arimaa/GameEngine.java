@@ -1,6 +1,8 @@
 package email.com.gmail.songjiapei.arimaa;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,13 +23,16 @@ public class GameEngine {
 	private Board board;
 	private ActionList actionList;
 	private boolean moveable[][] = new boolean[8][8];
+    private HashMap<Point, MultiMove> possibleMoves = new HashMap<Point, MultiMove> ();
 	//records state of the board at the beginning of a turn
 	private String boardState = "";
 
 	private Point heldPosition;
     private Square held;
 
-	// ///////////////////////////////////////////////////////////GAME
+    private static final Point[] TRAPS = { new Point(2, 2), new Point(2, 5), new Point(5, 2), new Point(5, 5) };
+
+    // ///////////////////////////////////////////////////////////GAME
 	// PROGRESSION MEMBERS
 
 	public enum GameState {
@@ -193,10 +198,7 @@ public class GameEngine {
 	}
 
 	void checkTraps() {
-		Point[] traps = { new Point(2, 2), new Point(2, 5), new Point(5, 2),
-				new Point(5, 5) };
-
-		for (Point trap : traps) {
+		for (Point trap : TRAPS) {
 			if (!isEmpty(trap)) {
 				if (!isSafe(trap)) {
 					actionList.addGameAction(new RemoveAction(trap, board
@@ -207,12 +209,14 @@ public class GameEngine {
 		}
 	}
 
-	void advanceStep() {
-		if (isPlayingState())
-			checkTraps();
+	void advanceStep(int steps) {
+		if (isPlayingState()) {
+            checkTraps();
 
-		if (turnSteps < 4)
-			turnSteps++;
+            if (turnSteps + steps > 4)
+                throw new IllegalStateException(steps + " steps cannot be taken when " + turnSteps + " steps have already been taken.");
+        }
+        turnSteps+= steps;
 	}
 
 	// finalize selection of pieces for gold, move rabbits if necessary
@@ -276,11 +280,6 @@ public class GameEngine {
 	}
 
 	// USED FOR PASSING ON INFO TO GAMEVIEW FOR DRAWING - NOT USED WITHIN ENGINE
-	boolean isHeldSilver() {
-		return Piece.PieceColour.SILVER == held.getColour();
-	}
-
-	// USED FOR PASSING ON INFO TO GAMEVIEW FOR DRAWING - NOT USED WITHIN ENGINE
 	boolean heldIsEmpty() {
 		return held.isEmpty();
 	}
@@ -292,7 +291,6 @@ public class GameEngine {
     void putDown(Point p){
         board.placeNewPiece(p, held.getPiece());
         held.releasePiece();
-        clearMoveable();
     }
 
     boolean isEmpty(Point p){
@@ -370,7 +368,6 @@ public class GameEngine {
 	// SHOULD ONLY BE CALLED BY A HUMAN
 	boolean requestMove(Point p) {
 
-        Log.v(TAG, "Move Request!");
         if (heldIsEmpty()) {
             return false;
         }
@@ -398,39 +395,33 @@ public class GameEngine {
 		if (isPlayingState()) {
 
 			if (isRightTurnForSelection(heldPiece.getColour())) {
-				
-				//make sure rabbits don't go backwards
-				if(heldPiece.getType() == Piece.PieceType.RABBIT){
-					if(heldPiece.getColour() == PieceColour.GOLD && ShiftMove.getDirection(heldPosition, p) == Direction.SOUTH){
-						returnHeld();
-						clearMoveable();
-						return false;
-					}
-					if(heldPiece.getColour()== PieceColour.SILVER && ShiftMove.getDirection(heldPosition, p) == Direction.NORTH){
-						returnHeld();
-						clearMoveable();
-						return false;
-					}
-				}
-				
-				actionList.addMove(new ShiftMove(heldPosition, p, held.getPiece(), false));
-			}
 
+                if(areAdjacent(heldPosition, p)){
+                    actionList.addMove(new ShiftMove(heldPosition, p, held.getPiece(), false));
+                }
+                else{
+                    actionList.addMove(possibleMoves.get(p));
+                }
+			}
 			// REMEMBER IF IT WAS A PUSH - PRIORITIZE PULL (LESS EXPENSIVE MOVE)
 			else if (couldGetPulledByLastMove(heldPosition, held.getPiece())) {
 				actionList.addMove(new ShiftMove(heldPosition, p, held.getPiece(), false));
 			}
-
+            // push
 			else {
 				actionList.addMove(new ShiftMove(heldPosition, p, held.getPiece(), true));
-			}
+            }
 			
 		}
 
 		putDown(p);
-
+        if(null != possibleMoves.get(p)) {
+            advanceStep(possibleMoves.get(p).getSteps());
+        }
+        else{
+            advanceStep(1);
+        }
 		clearMoveable();
-		advanceStep();
 		return true;
 	}
 
@@ -449,11 +440,16 @@ public class GameEngine {
 	}
 
 	boolean requestRevertMove() {
-		if (turnSteps <= 0 || !actionList.isLastMoveShift())
+		if (turnSteps <= 0 || !actionList.isLastMoveShiftOrMulti())
 			return false;
 
         returnHeld();
         clearMoveable();
+
+        if(turnSteps - actionList.getLastMoveSteps() < 0)
+            throw new IllegalStateException(actionList.getLastMoveSteps()+" cannot be reverted when only "+turnSteps+" steps have been taken.");
+
+        turnSteps-= actionList.getLastMoveSteps();
 
 		CpuPlaceMove revertedMove = actionList.getRevertedMove();
         Log.v(TAG, "Reverted: " + revertedMove.getPiece().getLetter());
@@ -462,12 +458,10 @@ public class GameEngine {
 
         // a piece was removed
         if (null != removeAction) {
-            board.placeNewPiece(removeAction.getPosition(),
-                    removeAction.getPiece());
+            board.placeNewPiece(removeAction.getPosition(), removeAction.getPiece());
         }
 
         requestMove(revertedMove);
-        turnSteps--;
         return true;
 	}
 	
@@ -513,14 +507,6 @@ public class GameEngine {
 		if (!held.isEmpty())
 			putDown(heldPosition);
 
-	}
-
-	boolean isSilver(Point p) {
-		if (isEmpty(p)) {
-			return false;
-		}
-
-		return board.getColour(p) == Piece.PieceColour.SILVER;
 	}
 
 	private boolean couldPushLastMove(Point pPusher) {
@@ -646,16 +632,19 @@ public class GameEngine {
         return (!isSameColour(p1, p2) && isBigger(p1, p2));
 	}
 
-	// checks if a friendly piece is keeping another piece mobile ASSUMES
-	// EXISTANCE
-	private boolean saving(Point p1, Point p2) {
-        return (isSameColour(p1, p2));
-	}
+    private boolean threatening(Piece p1, Piece p2) {
+        return (!p1.isSameColour(p2) && p1.isBigger(p2));
+    }
 
 	// checks if a bigger enemy piece is keeping a piece from moving
-	private boolean freezing(Point p1, Point p2) {
+    private boolean freezing(Point p1, Point p2) {
         return (threatening(p1, p2) && !isSafe(p2));
-	}
+    }
+
+    // checks if a bigger enemy piece would keep a piece from moving
+    private boolean freezing(Point p1, Point p2, Piece piece) {
+        return (threatening(board.getPiece(p1), piece) && !isSafe(p2, piece));
+    }
 
 	// controlled VS frozen : adjacent friend cannot save you (don't matter),
 	// but the attacker cannot be frozen
@@ -670,13 +659,27 @@ public class GameEngine {
 		Set<Point> filledAdjacents = getFilledAdjacents(p);
 
 		for (Point adjacent : filledAdjacents) {
-			if (saving(adjacent, p)) {
+			if (isSameColour(adjacent, p)) {
 				return true;
 			}
 		}
 
 		return false;
 	}
+
+    //would some piece be safe if it was placed there
+    private boolean isSafe(Point p, Piece piece) {
+
+        Set<Point> filledAdjacents = getFilledAdjacents(p);
+
+        for (Point adjacent : filledAdjacents) {
+            if (piece.isSameColour(board.getPiece(adjacent))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 	// checks if a square is "frozen" by an enemy or not
 	private boolean isFrozen(Point p) {
@@ -691,6 +694,20 @@ public class GameEngine {
 
 		return false;
 	}
+
+    // checks if piece would be frozen at point p
+    private boolean isFrozen(Point p, Piece piece) {
+
+        Set<Point> filledAdjacents = getFilledAdjacents(p);
+
+        for (Point adjacent : filledAdjacents) {
+            if (freezing(adjacent, p, piece)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 	// checks if a square is "controlled" by an enemy or not
 	private boolean isControlled(Point p) {
@@ -758,21 +775,96 @@ public class GameEngine {
 			}
 		}
 
-		// if regular move/pushing
-		Set<Point> emptyAdjacents = getEmptyAdjacents(heldPosition);
+        // if pushing
+        if (!isRightTurnForSelection(held.getColour())){
+            Set<Point> emptyAdjacents = getEmptyAdjacents(heldPosition);
 
-		for (Point p : emptyAdjacents) {
-			moveable[p.x][p.y] = true;
-		}
-
-        //extra for rabbits on their turn
-        if(getHeldLetter() == 'R' && gameState == GameState.GOLDTURN && heldPosition.y > 0)
-            moveable[heldPosition.x][heldPosition.y-1] = false;
-
-        if(getHeldLetter() == 'r' && gameState == GameState.SILVERTURN && heldPosition.y < 7)
-            moveable[heldPosition.x][heldPosition.y+1] = false;
-
+            for (Point p : emptyAdjacents) {
+                moveable[p.x][p.y] = true;
+            }
+        }
+        else{ //regular move
+            generateMoveable();
+        }
 	}
+
+    //MUST HAVE A PIECE HELD
+    private void generateMoveable() {
+        if (heldIsEmpty())
+            throw new IllegalStateException("Tried to generate moves without a held piece.");
+
+        Set<Point> possiblePoints = getEmptyAdjacents(heldPosition);
+        filterRabbitShiftMoves(possiblePoints, heldPosition, held.getPiece(), gameState);
+
+        for (Point p : possiblePoints) {
+            possibleMoves.put(p, new MultiMove(new ShiftMove(heldPosition, p, held.getPiece(), false)));
+        }
+
+        while (!possiblePoints.isEmpty()){
+
+            Set<Point> newPossiblePoints = new HashSet<Point>();
+
+            for (Point p : possiblePoints) {
+                Set<Point> newPoints = getEmptyAdjacents(p);
+                filterRabbitShiftMoves(newPoints, p, held.getPiece(), gameState);
+
+                //if already moveable, don't consider or generate anymore, some other path has it covered
+                if(moveable[p.x][p.y]){
+                    continue;
+                }
+                //if starting position, don't allow, but generate more
+                else if(p.equals(heldPosition)){
+                    addPointsToPossibleMoves(p, newPoints, newPossiblePoints);
+                }
+                //if frozen, removed by trap, or last move, allow it, but don't generate anymore
+                else if(isFrozen(p, held.getPiece()) || (Arrays.asList(TRAPS).contains(p) && !isSafe(p, held.getPiece())) ){
+                    moveable[p.x][p.y] = true;
+                }
+                //allow, only generate more steps if another would still be under the limit
+                else if(turnSteps + possibleMoves.get(p).getSteps() <= 4) {
+                    moveable[p.x][p.y] = true;
+                    if(turnSteps + possibleMoves.get(p).getSteps() < 4){
+                        addPointsToPossibleMoves(p, newPoints, newPossiblePoints);
+                    }
+                }
+            }
+
+            //do not recheck the same tiles
+            possiblePoints.clear();
+            possiblePoints.addAll(newPossiblePoints);
+        }
+
+        return;
+    }
+
+    private void filterRabbitShiftMoves(Set<Point> points, Point src, Piece piece, GameState state){
+        //case for rabbits
+        if(piece.getLetter() == 'R' && state == GameState.GOLDTURN) {
+            Point below = new Point(src.x, src.y-1);
+            if(points.contains(below))
+                points.remove(below);
+        }
+
+        else if(getHeldLetter() == 'r' && gameState == GameState.SILVERTURN) {
+            Point above = new Point(src.x, src.y+1);
+            if(points.contains(above))
+                points.remove(above);
+        }
+    }
+
+    private void addPointsToPossibleMoves(Point source, Set<Point> newPoints, Set<Point> newPossiblePoints){
+        for(Point newp : newPoints){
+            //if a multimove is already there, it will be shorter than the current one - let it stay
+            if(!possibleMoves.containsKey(newp)) {
+                newPossiblePoints.add(newp);
+
+                MultiMove newMove = new MultiMove(possibleMoves.get(source));
+                newMove.addShift(new ShiftMove(source, newp, held.getPiece(), false));
+
+                possibleMoves.put(newp, newMove);
+            }
+        }
+    }
 
 	private void clearMoveable() {
 
@@ -780,6 +872,7 @@ public class GameEngine {
 			for (int k = 0; k < 8; k++)
 				moveable[i][k] = false;
 
+        possibleMoves.clear();
 	}
 
 }
