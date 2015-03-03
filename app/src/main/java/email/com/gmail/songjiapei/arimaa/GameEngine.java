@@ -536,7 +536,7 @@ public class GameEngine {
 			return false;
 
 		if (areAdjacent(destination, pPullee)) {
-			if (!pullee.isSameColour(puller) && puller.isBigger(pullee)) {
+			if (!pullee.isSameColour(puller) && puller.isBigger(pullee) && !actionList.wasCompletingPush()) {
 				return true;
 			}
 		}

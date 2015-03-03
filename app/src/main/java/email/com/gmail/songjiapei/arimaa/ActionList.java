@@ -54,6 +54,21 @@ public class ActionList {
 		
 		return null;
 	}
+
+    private MoveAction getSecondLastMove(){
+        boolean firstTaken = false;
+
+        for(int i = actions.size()-1; i >= 0; i--){
+            if(moves.get(i)){
+                if(!firstTaken)
+                    firstTaken = true;
+                else
+                    return (MoveAction) actions.get(i);
+            }
+        }
+
+        return null;
+    }
 	
 	public Point getLastMoveSource(){
 		if(!isMovesEmpty())
@@ -167,10 +182,12 @@ public class ActionList {
 	}
 	
 	public boolean wasPushing(){
-		if(!isMovesEmpty())
-			return getLastMove().isPush();
-		
-		return false;
-	}
+        return !isMovesEmpty() && getLastMove().isPush();
 
+    }
+
+    public boolean wasCompletingPush() {
+        return !isMovesEmpty() && getSecondLastMove().isPush();
+
+    }
 }
