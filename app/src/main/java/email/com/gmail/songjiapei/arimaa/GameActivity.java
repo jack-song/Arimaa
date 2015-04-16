@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -54,7 +55,11 @@ public class GameActivity extends Activity {
 
 	    	            int windowWidth = gview.getWidth();
 
-	    	            gview.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                            gview.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        } else {
+                            gview.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        }
 	    	            
 	    	            gview.setWindowWidth(windowWidth);
 	    	            bview.setWindowWidth(windowWidth);
