@@ -7,11 +7,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
-import android.view.View;
+import android.util.Log;
+import android.widget.ImageView;
 
-public class BackgroundView extends View {
+import static android.app.PendingIntent.getActivity;
+
+public class BackgroundView extends ImageView {
 	
 	private static final String PREF_BACKSELECTION = "backset_selection";
+
+    static final String TAG = "BackgroundView";
 
 	//bitmap of background
 	private Bitmap back_map;
@@ -39,13 +44,24 @@ public class BackgroundView extends View {
 	}
 	
 	private void initialize(Context context){
+
+        if(null == context) context = this.getContext();
+
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-		backset = Integer.parseInt(pref.getString(PREF_BACKSELECTION, "1"));
+
+        try {
+            backset = Integer.parseInt(pref.getString(PREF_BACKSELECTION, "1"));
+        } catch (NumberFormatException N) {
+            Log.v(TAG, "Tried to backset parse " + pref.getString(PREF_BACKSELECTION, "1"));
+            backset = 1;
+        }
 	}
 
 	public void setWindowWidth(int windowWidth){
 		width = windowWidth;
 		height = windowWidth;
+
+        setDrawable();
 	}
 	
 	//set to square view, based on height
@@ -60,35 +76,32 @@ public class BackgroundView extends View {
 		super.onDraw(canvas);
 				
 		//draw the background
-		canvas.drawBitmap(back_map, 0, 0, null);
+        if(back_map != null) canvas.drawBitmap(back_map, 0, 0, null);
 
 	}
 	
 	public void updateGraphicsSelection(SharedPreferences pref){
-		
-		Bitmap pre_board;
 		backset = Integer.parseInt(pref.getString(PREF_BACKSELECTION, "1"));
 		
-		switch(backset){
-		case 1:
-			pre_board = BitmapFactory.decodeResource(getResources(), R.drawable.traditional);
-			break;
-
-		case 2:
-			pre_board = BitmapFactory.decodeResource(getResources(), R.drawable.stone);
-			break;
-		case 3:
-			pre_board = BitmapFactory.decodeResource(getResources(), R.drawable.minimalistdark);
-			break;
-		default:
-			pre_board = BitmapFactory.decodeResource(getResources(), R.drawable.minimalistlight);
-			break;
-		}
-		
-		//resize the bitmap to the size of the background
-		back_map = Bitmap.createScaledBitmap(pre_board, width, height, true);
-		
-		pre_board.recycle();
+		setDrawable();
 	}
+
+    private void setDrawable(){
+        switch(backset){
+            case 1:
+                setImageDrawable(getResources().getDrawable(R.drawable.traditional));
+                break;
+
+            case 2:
+                setImageDrawable(getResources().getDrawable(R.drawable.stone));
+                break;
+            case 3:
+                setImageDrawable(getResources().getDrawable(R.drawable.minimalistdark));
+                break;
+            default:
+                setImageDrawable(getResources().getDrawable(R.drawable.minimalistlight));
+                break;
+        }
+    }
 
 }

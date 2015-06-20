@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,6 +8,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:gravity="center"
     android:layout_gravity="center"
+    android:orientation="vertical"
+    android:weightSum="9"
     tools:context=".GameActivity" 
     android:configChanges="keyboardHidden|orientation" >
     
@@ -16,6 +18,7 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="horizontal"
+        android:layout_weight="1"
 	    android:rotation="180" >
 	    
 	    
@@ -45,26 +48,45 @@
     
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/midsection"
-       	android:layout_width="wrap_content"
-	    android:layout_height="wrap_content" 
-	    android:layout_below="@id/topsection"
-	    android:layout_centerVertical="true" >
-    
-	    <email.com.gmail.songjiapei.arimaa.BackgroundView
-	        android:id="@+id/board"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_centerVertical="true" />
-	    
-	    <email.com.gmail.songjiapei.arimaa.GameView
-	        android:id="@+id/pieces"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_centerVertical="true" />
-    
-    </RelativeLayout>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="8">
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center">
+
+            <RelativeLayout
+                android:id="@+id/midsection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <email.com.gmail.songjiapei.arimaa.BackgroundView
+                    android:id="@+id/board"
+                    android:src="@drawable/traditional"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:layout_centerVertical="true" />
+
+                <email.com.gmail.songjiapei.arimaa.GameView
+                    android:id="@+id/pieces"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
     
     
     <LinearLayout
@@ -72,6 +94,7 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="horizontal"
+        android:layout_weight="1"
 	    android:layout_below="@id/midsection" >
 	    
        	<Button
@@ -100,4 +123,4 @@
     
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>
