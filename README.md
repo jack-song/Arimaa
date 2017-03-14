@@ -1,31 +1,26 @@
 Arimaa
 ======
 
-Developing the Arimaa Free app for Android
+Arimaa Free on the play store! https://play.google.com/store/apps/details?id=email.com.gmail.songjiapei.arimaa
 
-Currently in development as a learning project; feedback, pointers, and advice greatly appreciated
+Open source contributions welcome! I'm currently looking for someone to pass on the development torch; there's a lot of interesting work to be done, especially as a beginner/intermediate project. Send an email to jackthesong@gmail.com and I'd be glad to set you up/do a walkthrough.
 
-####In progress:
-  - move generation to allow easier move-making
-  - new interaction system that allows dragging and touch based movement of pieces at the same time
+#### In progress:
+  - stricter implementation of game rules (corner/rare cases)
 
-####Planned refactors:
+#### TODO:
   - Exporting utility methods from the massive GameEngine class to a game rules oriented class
+  - Bots!
+  - Link to learn the rules
   - Adjusting the scopes of fields and methods
-  - reducing amount of switch-cases and other convoluted code pieces
+  - reducing amount of switch-cases etc.
   - Implementing exceptions for handling errors
   - Add test cases
   - Defining and using constants properly
   - Exporting fields from the massive GameEngine class to a proper model class
     - implementing an observer pattern on the model class to reduce onion code layers
-  
-####Planned features:
-
-  
-####Much later:
-  - Bots
   - Importing and exporting games
-  - Connecting online ???
+  - Online games ???
 
 
 This software is being provided with a written authorization from Arimaa.com and in compliance with "Section 3
